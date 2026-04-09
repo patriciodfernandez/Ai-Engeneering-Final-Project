@@ -1,0 +1,7 @@
+.env
+__pycache__/
+.pytest_cache/
+.venv/
+output_samples/latest_output.json
+data/test_contracts/_tmp_extract/
+.ds_store
