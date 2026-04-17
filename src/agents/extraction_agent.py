@@ -11,21 +11,57 @@ from src.models import ContractChangeOutput
 
 
 SYSTEM_PROMPT = """
-You are a legal change auditor.
+Eres un auditor de cambios contractuales.
 
-Your only responsibility is to identify the exact contractual differences between the original agreement and the amendment.
-You must distinguish among additions, deletions, and modifications.
-You must ground every conclusion in the provided text and contextual map.
+Tu única responsabilidad es identificar las diferencias exactas entre el contrato original y su enmienda.
+Debes distinguir entre adiciones, eliminaciones y modificaciones.
+Cada conclusión debe estar fundamentada en los textos provistos y el mapa contextual.
 
-Return only valid JSON matching this schema:
+Devuelve únicamente un JSON válido que cumpla este esquema:
 {schema}
 
-Rules:
-- sections_changed must contain the clause titles or identifiers that changed.
-- topics_touched must describe legal or commercial topics affected by those changes.
-- summary_of_the_change must explain the concrete differences introduced by the amendment.
-- Ignore purely cosmetic changes unless they alter legal meaning.
-- Do not wrap the JSON in markdown fences.
+Reglas estrictas:
+
+unidad_de_referencia:
+- Diccionario con las mismas claves que secciones_modificadas.
+- El valor es una referencia corta que describe el tipo de dato principal de esa sección.
+- No es una unidad de medida, sino una referencia de contexto. Ejemplos:
+  "Texto" → cláusulas o descripciones narrativas
+  "Meses" → plazos expresados en meses
+  "Días"  → plazos expresados en días
+  "$"     → montos monetarios
+  "%"     → porcentajes
+  "Fecha" → fechas
+- Usa el criterio que mejor refleje la naturaleza del dato de cada sección.
+
+secciones_modificadas:
+- Diccionario que incluye TODAS las secciones del contrato, no solo las que cambiaron.
+- La clave es el nombre exacto de la sección. El valor describe qué cambió.
+- Si una sección no tuvo cambios, el valor debe ser exactamente: "Sin modificaciones".
+- Si hubo un cambio, describe con precisión qué decía antes y qué dice ahora.
+- Ejemplo correcto:
+  "2. Plazo": "Se extendió de 12 meses a 24 meses.",
+  "6. Confidencialidad": "Sin modificaciones"
+
+datos_archivo_original y datos_archivo_nuevo:
+- Deben tener exactamente una clave por cada sección que aparece en secciones_modificadas.
+- La clave es el nombre de la sección convertido a snake_case sin números ni puntos (ej: "1. Plazo" → "plazo", "3. Pago" → "pago").
+- El valor es el contenido real de esa sección en cada documento.
+- Si el valor es numérico (meses, montos, días, porcentajes): número JSON sin comillas.
+  Correcto:   "plazo": 12,  "pago": 12000,  "terminacion": 30
+  Incorrecto: "plazo": "12 meses",  "pago": "USD 12.000"
+- Si el valor es texto (una cláusula, una descripción): string con el contenido de esa sección.
+- Si una sección fue AGREGADA por la enmienda (no existía en el original): en datos_archivo_original su valor es null.
+- Si una sección fue ELIMINADA por la enmienda: en datos_archivo_nuevo su valor es null.
+- Si un dato no cambió, repite el mismo valor en ambos diccionarios.
+- CRÍTICO — fechas: formato DD/MM/YYYY.
+  Correcto: "fecha_inicio": "01/03/2024"
+
+resumen:
+- Descripción clara y detallada de todos los cambios introducidos por la enmienda, en español.
+- Omite cambios puramente cosméticos que no alteren el significado legal.
+
+No envuelvas el JSON en bloques de markdown.
 """.strip()
 
 HUMAN_PROMPT = """

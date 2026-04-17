@@ -1,170 +1,155 @@
-# LegalMove Contract Comparison Agent
+# Agente de Comparación de Contratos — LegalMove
 
-Autonomous multi-agent pipeline that compares a scanned original contract against a scanned amendment, extracts the legal changes, validates the result with Pydantic, and traces the full workflow with Langfuse.
+Este sistema recibe dos imágenes escaneadas (un contrato original y su enmienda), las lee con IA, analiza qué cambió y devuelve un JSON validado con el resultado.
 
-## Problem
+---
 
-LegalMove receives large volumes of amended contracts. Compliance teams lose time reading both versions manually, identifying changed clauses, and preparing a structured report for downstream systems. This project automates that workflow end to end.
+## El problema que resuelve
 
-## Architecture
+El equipo de Compliance de LegalMove pasa más de 40 horas por semana comparando contratos a mano. Este sistema automatiza ese proceso: en lugar de leer dos documentos y buscar diferencias manualmente, dos agentes de IA hacen el trabajo y devuelven un reporte estructurado listo para usar.
 
-```mermaid
-flowchart TD
-    A[Original contract image] --> B[GPT-4o Vision parser]
-    C[Amendment image] --> D[GPT-4o Vision parser]
-    B --> E[ContextualizationAgent]
-    D --> E
-    E --> F[Contextual map]
-    B --> G[ExtractionAgent]
-    D --> G
-    F --> G
-    G --> H[Pydantic validation]
-    H --> I[Structured JSON output]
-    A -. traced .-> J[Langfuse]
-    C -. traced .-> J
-    E -. traced .-> J
-    G -. traced .-> J
+---
+
+## Cómo funciona (el pipeline)
+
+```
+Imagen original  →  GPT-4o Vision  →  Texto del contrato
+Imagen enmienda  →  GPT-4o Vision  →  Texto de la enmienda
+                                            ↓
+                                  Agente 1: Contextualización
+                                  (mapea la estructura de ambos documentos)
+                                            ↓
+                                  Agente 2: Extracción de cambios
+                                  (detecta qué cambió exactamente)
+                                            ↓
+                                  Pydantic valida el JSON final
+                                            ↓
+                                  Langfuse registra todo el proceso
 ```
 
-## Why this design
+---
 
-1. GPT-4o Vision is used only where multimodality is necessary: reading scanned contract images.
-2. The first agent does not extract changes. It only builds structure and alignment, which reduces confusion in the second step.
-3. The second agent works on a clearer comparison space and can focus on additions, deletions, and modifications.
-4. Pydantic closes the pipeline with a strict contract so the final output is machine-safe.
-5. Langfuse provides operational traceability for debugging, audits, and the live defense.
+## Tecnologías usadas y por qué
 
-## Project structure
+**GPT-4o Vision** — los contratos llegan como imágenes escaneadas, no como texto. GPT-4o puede leer la imagen y transcribir el contenido preservando la estructura del documento.
 
-```text
+**LangChain** — organiza los dos agentes y les pasa la información entre sí de forma ordenada.
+
+**Pydantic** — garantiza que el JSON de salida siempre tenga los campos correctos con los tipos correctos. Si el modelo devuelve algo mal formado, el sistema lo rechaza en lugar de guardar datos incorrectos.
+
+**Langfuse** — registra cada paso del pipeline: qué entró, qué salió, cuántos tokens usó y cuánto tardó. Es la "caja negra" del sistema.
+
+---
+
+## Por qué dos agentes y no uno
+
+El **Agente 1** solo mapea la estructura: qué secciones existen en cada documento y cómo se corresponden entre sí. No extrae cambios.
+
+El **Agente 2** recibe ese mapa y se concentra únicamente en detectar las diferencias. Al dividir el trabajo, cada agente hace una sola cosa y la hace bien. Si fuera un solo agente, tendría que entender la estructura Y extraer cambios al mismo tiempo, lo que genera más errores.
+
+---
+
+## Estructura del proyecto
+
+```
 AEM4-Proyecto Final/
-├── data/test_contracts/
 ├── src/
-│   ├── agents/
-│   │   ├── contextualization_agent.py
-│   │   └── extraction_agent.py
-│   ├── config.py
-│   ├── image_parser.py
-│   ├── main.py
-│   ├── models.py
-│   └── observability.py
-├── .env.example
-├── requirements.txt
-└── README.md
+│   ├── main.py                          → punto de entrada, orquesta el pipeline
+│   ├── config.py                        → carga las variables de entorno
+│   ├── models.py                        → define cómo debe verse el JSON de salida
+│   ├── image_parser.py                  → lee las imágenes con GPT-4o Vision
+│   ├── observability.py                 → conexión con Langfuse
+│   └── agents/
+│       ├── contextualization_agent.py   → Agente 1
+│       └── extraction_agent.py          → Agente 2
+├── data/test_contracts/                 → 3 pares de contratos de prueba
+├── output_samples/                      → JSONs generados por el sistema
+├── .env.example                         → plantilla de variables de entorno
+└── requirements.txt                     → dependencias con versiones fijadas
 ```
 
-## Setup
+---
 
-Recommended runtime: Python 3.12.
+## Instalación
 
-This repository was verified locally with Python 3.12. On Python 3.14, some dependencies such as `pydantic-core` may try to compile from source and fail on Windows.
-
-1. Create a virtual environment.
-2. Install dependencies.
-3. Copy `.env.example` to `.env` and fill in your keys.
-
-```powershell
+```bash
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\activate
 pip install -r requirements.txt
-Copy-Item .env.example .env
+copy .env.example .env
+# completar el .env con las API keys
 ```
 
-Required environment variables:
+Variables necesarias en el `.env`:
 
-```env
-OPENAI_API_KEY=your-openai-key
+```
+OPENAI_API_KEY=...
 OPENAI_VISION_MODEL=gpt-4o
 OPENAI_AGENT_MODEL=gpt-4o-mini
-LANGFUSE_PUBLIC_KEY=pk-lf-xxx
-LANGFUSE_SECRET_KEY=sk-lf-xxx
+LANGFUSE_PUBLIC_KEY=...
+LANGFUSE_SECRET_KEY=...
 LANGFUSE_BASE_URL=https://cloud.langfuse.com
 ```
 
-## Usage
+---
 
-Example with the first test pair:
+## Cómo correrlo
 
-```powershell
+```bash
 python src/main.py data/test_contracts/documento_1__original.jpg data/test_contracts/documento_1__enmienda.jpg --output output_samples/case_1.json
 ```
 
-The command prints the validated JSON and stores it on disk.
+El sistema imprime el JSON en pantalla y lo guarda en el archivo indicado.
 
-## Langfuse trace design
+---
 
-The root trace is `contract-analysis` and it contains four child spans:
+## Lo que devuelve
 
-```text
-contract-analysis
-├── parse_original_contract
-├── parse_amendment_contract
-├── contextualization_agent
-└── extraction_agent
+```json
+{
+  "unidad_de_referencia": {
+    "2. Plazo": "Meses",
+    "3. Pago": "$"
+  },
+  "modificacion_validada": true,
+  "secciones_modificadas": {
+    "2. Plazo": "Se extendió de 12 meses a 24 meses.",
+    "6. Confidencialidad": "Sin modificaciones"
+  },
+  "datos_archivo_original": {
+    "plazo": 12,
+    "pago": 12000
+  },
+  "datos_archivo_nuevo": {
+    "plazo": 24,
+    "pago": 15000
+  },
+  "resumen": "La enmienda extiende el contrato de 12 a 24 meses y aumenta el pago anual."
+}
 ```
 
-Each span stores:
-- input payload
-- output payload
-- token usage when available
-- metadata such as selected model or saved output path
+---
 
-## Step-by-step pipeline explanation
+## Trazabilidad en Langfuse
 
-### 1. `parse_contract_image()`
+Cada ejecución genera una traza con esta jerarquía:
 
-Receives a file path, validates the extension, reads the bytes, encodes them in base64, and sends the image to GPT-4o with a prompt that asks for faithful transcription. This is where the multimodal reasoning happens.
+```
+contract-analysis
+├── parse_original_contract     → GPT-4o lee la imagen original
+├── parse_amendment_contract    → GPT-4o lee la imagen de la enmienda
+├── contextualization_agent     → Agente 1 mapea la estructura
+└── extraction_agent            → Agente 2 extrae los cambios
+```
 
-### 2. `ContextualizationAgent`
+Cada paso registra el input, el output, los tokens utilizados y el tiempo que tardó.
 
-Receives both parsed texts and creates a comparison map. This agent answers: which sections align, which clauses look unchanged, and where changes are likely happening.
+---
 
-### 3. `ExtractionAgent`
+## Contratos de prueba incluidos
 
-Receives the contextual map plus both source texts. It isolates the actual legal differences and returns JSON only.
-
-### 4. Pydantic validation
-
-`ContractChangeOutput.model_validate_json()` guarantees the final answer contains:
-- `sections_changed`
-- `topics_touched`
-- `summary_of_the_change`
-
-If the JSON is malformed or incomplete, the pipeline fails loudly instead of producing unsafe output.
-
-### 5. Langfuse instrumentation
-
-The orchestrator wraps every major step in a parent-child span hierarchy. This lets you inspect exactly what was parsed, what the first agent inferred, what the second agent extracted, and how many tokens each step consumed.
-
-## Suggested live defense flow
-
-1. Explain the business problem: manual contract review does not scale.
-2. Show one simple pair and one complex pair.
-3. Run the CLI live and show the JSON result.
-4. Open Langfuse and explain the root trace and child spans.
-5. Justify why two agents are better than one: separation of responsibilities reduces prompt overload and makes debugging easier.
-6. Close with Pydantic: no unvalidated output reaches downstream systems.
-
-## Technical decisions you should be ready to defend
-
-### Why GPT-4o for parsing?
-
-Because the input is scanned imagery, not clean text. GPT-4o gives multimodal extraction without needing a separate OCR stack.
-
-### Why two agents?
-
-Because the tasks are different. Mapping document structure and extracting legal deltas are not the same cognitive operation. Splitting them improves control and observability.
-
-### Why Pydantic?
-
-Because downstream systems need a guaranteed schema, not approximate prose.
-
-### Why Langfuse?
-
-Because production AI systems need auditability: inputs, outputs, timing, token usage, and failure analysis.
-
-## Demo scenarios already available
-
-- Pair 1: software license with term, payment, support, termination, and new data-protection clause.
-- Pair 2: consulting agreement with expanded scope, fee change, cadence change, and new IP clause.
-- Pair 3: SaaS contract with pricing, uptime, and support changes.
+| Par | Tipo de contrato | Cambios |
+|-----|-----------------|---------|
+| 1 | Licencia de software | Plazo, pago, soporte, terminación, nueva cláusula de datos |
+| 2 | Consultoría | Alcance, duración, honorarios, entregables, nueva cláusula de IP |
+| 3 | SaaS | Precio, disponibilidad, soporte |

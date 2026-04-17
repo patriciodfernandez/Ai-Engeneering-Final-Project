@@ -1,48 +1,90 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Dict, Optional, Union
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ContractChangeOutput(BaseModel):
-    sections_changed: List[str] = Field(
+    unidad_de_referencia: Dict[str, str] = Field(
         ...,
-        min_length=1,
-        description="Identifiers or titles of the contract sections that changed.",
+        description=(
+            "Diccionario con una clave por sección que indica el tipo o referencia del dato principal "
+            "de esa sección. Ejemplos: 'Texto', 'Meses', '$', '%', 'Días', 'Fecha'."
+        ),
     )
-    topics_touched: List[str] = Field(
+    modificacion_validada: bool = Field(
+        default=False,
+        description=(
+            "true si se detectaron cambios entre el contrato original y la enmienda. "
+            "false si todos los campos son 'Sin modificaciones'."
+        ),
+    )
+    secciones_modificadas: Dict[str, str] = Field(
         ...,
-        min_length=1,
-        description="Legal or commercial topics affected by the amendment.",
+        description=(
+            "Diccionario donde cada clave es el nombre de una sección del contrato "
+            "y el valor describe qué cambió, o 'Sin modificaciones' si no hubo cambios."
+        ),
     )
-    summary_of_the_change: str = Field(
+    datos_archivo_original: Dict[str, Union[int, float, str, None]] = Field(
+        ...,
+        description=(
+            "Datos clave del contrato original. "
+            "Valores numéricos sin comillas. Fechas en formato DD/MM/YYYY."
+        ),
+    )
+    datos_archivo_nuevo: Dict[str, Union[int, float, str, None]] = Field(
+        ...,
+        description=(
+            "Datos clave del contrato modificado, mismas claves que datos_archivo_original. "
+            "Valores numéricos sin comillas. Fechas en formato DD/MM/YYYY."
+        ),
+    )
+    resumen: str = Field(
         ...,
         min_length=20,
-        description="Detailed but concise explanation of the differences.",
+        description="Descripción detallada de todos los cambios introducidos por la enmienda.",
     )
 
-    @field_validator("sections_changed", "topics_touched", mode="before")
+    @model_validator(mode="after")
+    def compute_modificacion_validada(self) -> "ContractChangeOutput":
+        """Deriva modificacion_validada desde secciones_modificadas, sin depender del LLM."""
+        self.modificacion_validada = any(
+            v.strip().lower() != "sin modificaciones"
+            for v in self.secciones_modificadas.values()
+        )
+        return self
+
+    @field_validator("datos_archivo_original", "datos_archivo_nuevo", mode="before")
     @classmethod
-    def clean_string_lists(cls, value: List[str]) -> List[str]:
-        if not isinstance(value, list):
-            raise TypeError("Expected a list of strings")
+    def coerce_numeric_strings(cls, value: dict) -> dict:
+        """Convierte strings numéricos a int o float para garantizar tipos correctos en el JSON."""
+        if not isinstance(value, dict):
+            raise TypeError("Se esperaba un diccionario")
 
-        cleaned: list[str] = []
-        for item in value:
-            text = str(item).strip()
-            if text and text not in cleaned:
-                cleaned.append(text)
+        result: dict = {}
+        for key, val in value.items():
+            if isinstance(val, str):
+                stripped = val.strip()
+                try:
+                    result[key] = int(stripped)
+                    continue
+                except ValueError:
+                    pass
+                try:
+                    result[key] = float(stripped)
+                    continue
+                except ValueError:
+                    pass
+            result[key] = val
 
-        if not cleaned:
-            raise ValueError("List cannot be empty after normalization")
+        return result
 
-        return cleaned
-
-    @field_validator("summary_of_the_change")
+    @field_validator("resumen")
     @classmethod
-    def clean_summary(cls, value: str) -> str:
+    def clean_resumen(cls, value: str) -> str:
         cleaned = value.strip()
         if len(cleaned) < 20:
-            raise ValueError("summary_of_the_change is too short")
+            raise ValueError("El resumen es demasiado corto")
         return cleaned

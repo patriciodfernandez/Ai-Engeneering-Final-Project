@@ -82,8 +82,8 @@ def run_pipeline(original_image: str, amendment_image: str, output_path: str | P
                 },
             )
 
-            with observability.span("parse_original_contract") as span:
-                span.update(input={"image_path": original_image})
+            with observability.generation("parse_original_contract") as span:
+                span.update(input={"image_path": original_image}, model=settings.openai_vision_model)
                 original_text, original_usage = parse_contract_image(
                     original_image, openai_client, settings.openai_vision_model
                 )
@@ -92,8 +92,8 @@ def run_pipeline(original_image: str, amendment_image: str, output_path: str | P
                     metadata={"usage": original_usage, "characters": len(original_text)},
                 )
 
-            with observability.span("parse_amendment_contract") as span:
-                span.update(input={"image_path": amendment_image})
+            with observability.generation("parse_amendment_contract") as span:
+                span.update(input={"image_path": amendment_image}, model=settings.openai_vision_model)
                 amendment_text, amendment_usage = parse_contract_image(
                     amendment_image, openai_client, settings.openai_vision_model
                 )
@@ -102,12 +102,10 @@ def run_pipeline(original_image: str, amendment_image: str, output_path: str | P
                     metadata={"usage": amendment_usage, "characters": len(amendment_text)},
                 )
 
-            with observability.span("contextualization_agent") as span:
+            with observability.generation("contextualization_agent") as span:
                 span.update(
-                    input={
-                        "original_text": original_text,
-                        "amendment_text": amendment_text,
-                    }
+                    input={"original_text": original_text, "amendment_text": amendment_text},
+                    model=settings.openai_agent_model,
                 )
                 contextual_result = contextualization_agent.run(
                     original_text=original_text,
@@ -118,13 +116,14 @@ def run_pipeline(original_image: str, amendment_image: str, output_path: str | P
                     metadata={"usage": contextual_result.usage},
                 )
 
-            with observability.span("extraction_agent") as span:
+            with observability.generation("extraction_agent") as span:
                 span.update(
                     input={
                         "contextual_map": contextual_result.content,
                         "original_text": original_text,
                         "amendment_text": amendment_text,
-                    }
+                    },
+                    model=settings.openai_agent_model,
                 )
                 extraction_result = extraction_agent.run(
                     contextual_map=contextual_result.content,

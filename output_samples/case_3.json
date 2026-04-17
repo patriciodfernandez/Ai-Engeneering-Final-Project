@@ -1,0 +1,32 @@
+{
+  "unidad_de_referencia": {
+    "Servicio": "Texto",
+    "Plazo de Suscripción": "Texto",
+    "Precio": "$",
+    "Disponibilidad del Servicio": "%",
+    "Soporte": "Texto"
+  },
+  "modificacion_validada": true,
+  "secciones_modificadas": {
+    "1. Servicio": "Sin modificaciones",
+    "2. Plazo de Suscripción": "Sin modificaciones",
+    "3. Precio": "Se aumentó de USD 1.200 a USD 1.250.",
+    "4. Disponibilidad del Servicio": "Se aumentó de 99,5% a 99,9%.",
+    "5. Soporte": "Se agregó un sistema de tickets en línea al soporte vía correo electrónico."
+  },
+  "datos_archivo_original": {
+    "servicio": "El Proveedor brindará acceso a la plataforma de análisis CloudMetrics.",
+    "plazo_de_suscripcion": "La suscripción tendrá una duración de 12 meses.",
+    "precio": 1200,
+    "disponibilidad_del_servicio": 99.5,
+    "soporte": "El soporte al cliente se brindará vía correo electrónico."
+  },
+  "datos_archivo_nuevo": {
+    "servicio": "El Proveedor brindará acceso a la plataforma de análisis CloudMetrics.",
+    "plazo_de_suscripcion": "La suscripción tendrá una duración de 12 meses.",
+    "precio": 1250,
+    "disponibilidad_del_servicio": 99.9,
+    "soporte": "El soporte al cliente se brindará vía correo electrónico y sistema de tickets en línea."
+  },
+  "resumen": "Se realizaron cambios en las secciones de Precio, Disponibilidad del Servicio y Soporte. El precio mensual se incrementó de USD 1.200 a USD 1.250. La disponibilidad del servicio se mejoró de 99,5% a 99,9%. Además, se añadió un sistema de tickets en línea al soporte que anteriormente solo se brindaba vía correo electrónico."
+}
