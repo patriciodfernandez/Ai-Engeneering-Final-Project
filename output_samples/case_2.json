@@ -10,13 +10,13 @@
   },
   "modificacion_validada": true,
   "secciones_modificadas": {
-    "1. Alcance del Servicio": "Se amplió para incluir 'análisis regulatorio'.",
-    "2. Duración": "Se extendió de 6 meses a 9 meses.",
-    "3. Honorarios": "Se incrementó de USD 8,000 a USD 9,500.",
-    "4. Entregables": "Se cambió de 'reportes mensuales' a 'reportes quincenales'.",
+    "1. Alcance del Servicio": "Se modificó para incluir 'análisis regulatorio'.",
+    "2. Duración": "Se modificó de 6 meses a 9 meses.",
+    "3. Honorarios": "Se modificó de USD 8,000 a USD 9,500.",
+    "4. Entregables": "Se modificó de 'reportes mensuales' a 'reportes quincenales'.",
     "5. Confidencialidad": "Sin modificaciones",
     "6. Legislación Aplicable": "Sin modificaciones",
-    "7. Propiedad Intelectual": "Se agregó, indicando que todos los entregables pasarán a ser propiedad del Cliente una vez realizado el pago final."
+    "7. Propiedad Intelectual": "Se añadió una cláusula sobre la propiedad de los entregables."
   },
   "datos_archivo_original": {
     "alcance_del_servicio": "El Consultor brindará servicios de consultoría estratégica relacionados con la expansión de proyectos de energía renovable.",
@@ -36,5 +36,5 @@
     "legislacion_aplicable": "Este contrato se regirá por las leyes del Estado de California.",
     "propiedad_intelectual": "Todos los entregables producidos durante el proyecto pasarán a ser propiedad del Cliente una vez realizado el pago final."
   },
-  "resumen": "Se realizaron varias modificaciones en el contrato original. El alcance del servicio se amplió para incluir análisis regulatorio. La duración del servicio se extendió de 6 meses a 9 meses. Los honorarios se incrementaron de USD 8,000 a USD 9,500. La frecuencia de los entregables cambió de reportes mensuales a reportes quincenales. Además, se agregó una nueva sección sobre propiedad intelectual, estableciendo que todos los entregables serán propiedad del Cliente tras el pago final."
+  "resumen": "Se realizaron cambios en varias secciones del contrato. En el 'Alcance del Servicio' se añadió 'análisis regulatorio'. La 'Duración' se extendió de 6 meses a 9 meses. Los 'Honorarios' se incrementaron de USD 8,000 a USD 9,500. La frecuencia de los 'Entregables' cambió de 'reportes mensuales' a 'reportes quincenales'. Se añadió una nueva sección sobre 'Propiedad Intelectual' que establece que todos los entregables serán propiedad del Cliente tras el pago final."
 }

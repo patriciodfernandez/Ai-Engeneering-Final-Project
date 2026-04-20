@@ -10,13 +10,22 @@
   },
   "modificacion_validada": true,
   "secciones_modificadas": {
-    "1. Otorgamiento de Licencia": "Se modificó de 'únicamente para fines internos de la empresa' a 'para operaciones internas de negocio.'",
+    "1. Otorgamiento de Licencia": "Se modificó de 'únicamente para fines internos de la empresa' a 'para operaciones internas de negocio'.",
     "2. Plazo": "Se extendió de 12 meses a 24 meses.",
-    "3. Pago": "Se incrementó de USD 12.000 a USD 15.000.",
-    "4. Soporte": "Se amplió de 'durante horario laboral' a 'y chat durante horario laboral.'",
-    "5. Terminación": "Se extendió de 30 días de anticipación a 60 días de anticipación.",
+    "3. Pago": "Se modificó de USD 12.000 a USD 15.000.",
+    "4. Soporte": "Se agregó 'y chat' al soporte técnico que antes era solo vía correo electrónico.",
+    "5. Terminación": "Se extendió el plazo de notificación de 30 días a 60 días.",
     "6. Confidencialidad": "Sin modificaciones",
-    "7. Protección de Datos": "Se agregó una cláusula sobre el cumplimiento de normativas de protección de datos."
+    "7. Protección de Datos": "Se agregó una nueva cláusula que establece el compromiso del Licenciante de cumplir con las normativas de protección de datos."
+  },
+  "modificacion_realizada": {
+    "otorgamiento_de_licencia": "El Licenciante otorga al Licenciatario una licencia no exclusiva e intransferible para utilizar el software denominado \"NovaAnalytics\" únicamente para fines internos de la empresa.",
+    "plazo": true,
+    "pago": true,
+    "soporte":false,
+    "terminacion": true,
+    "confidencialidad": true,
+    "proteccion_de_datos": null
   },
   "datos_archivo_original": {
     "otorgamiento_de_licencia": "El Licenciante otorga al Licenciatario una licencia no exclusiva e intransferible para utilizar el software denominado \"NovaAnalytics\" únicamente para fines internos de la empresa.",
@@ -36,5 +45,5 @@
     "confidencialidad": "Ambas partes acuerdan mantener la confidencialidad de toda la información propietaria intercambiada durante la vigencia del contrato.",
     "proteccion_de_datos": "El Licenciante se compromete a cumplir con las normativas aplicables en materia de protección de datos en relación con la información del Licenciatario."
   },
-  "resumen": "Se realizaron modificaciones significativas en varias secciones del contrato. En la sección 1, se cambió la redacción para permitir el uso del software en 'operaciones internas de negocio'. La duración del contrato en la sección 2 se extendió de 12 a 24 meses. En la sección 3, la tarifa anual de licencia se incrementó de USD 12.000 a USD 15.000. La sección 4 se amplió para incluir soporte por chat además de correo electrónico. En la sección 5, el plazo de notificación para la terminación del contrato se extendió de 30 a 60 días. Finalmente, se agregó la sección 7 sobre la protección de datos, que establece el compromiso del Licenciante con las normativas aplicables."
+  "resumen": "Se realizaron cambios significativos en el contrato original. La cláusula de 'Otorgamiento de Licencia' fue modificada para cambiar la redacción sobre el uso del software. El 'Plazo' se extendió de 12 a 24 meses. En la sección de 'Pago', el monto se incrementó de USD 12,000 a USD 15,000. La cláusula de 'Soporte' ahora incluye soporte por chat además de correo electrónico. El plazo de notificación en la cláusula de 'Terminación' se amplió de 30 a 60 días. Además, se añadió una nueva cláusula de 'Protección de Datos' que establece el compromiso del Licenciante con las normativas de protección de datos."
 }

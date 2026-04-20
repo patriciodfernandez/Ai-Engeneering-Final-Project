@@ -1,0 +1,36 @@
+{
+  "unidad_de_referencia": {
+    "1. Otorgamiento de Licencia": "Texto",
+    "2. Plazo": "Meses",
+    "3. Pago": "$",
+    "4. Soporte": "Texto",
+    "5. Terminación": "Texto",
+    "6. Confidencialidad": "Texto"
+  },
+  "modificacion_validada": true,
+  "secciones_modificadas": {
+    "1. Otorgamiento de Licencia": "Sin modificaciones",
+    "2. Plazo": "Se modificó de 12 meses a 24 meses.",
+    "3. Pago": "Se modificó de USD 12.000 a USD 14.400.",
+    "4. Soporte": "Sin modificaciones",
+    "5. Terminación": "Sin modificaciones",
+    "6. Confidencialidad": "Sin modificaciones"
+  },
+  "datos_archivo_original": {
+    "otorgamiento_de_licencia": "El Licenciante otorga al Licenciatario una licencia no exclusiva e intransferible para utilizar el software denominado \"NovaAnalytics\" únicamente para fines internos de la empresa.",
+    "plazo": 12,
+    "pago": 12000,
+    "soporte": "El Licenciante brindará soporte técnico vía correo electrónico durante horario laboral.",
+    "terminacion": "Cualquiera de las partes podrá rescindir el contrato mediante notificación escrita con 30 días de anticipación.",
+    "confidencialidad": "Ambas partes acuerdan mantener la confidencialidad de toda la información propietaria intercambiada durante la vigencia del contrato."
+  },
+  "datos_archivo_nuevo": {
+    "otorgamiento_de_licencia": "El Licenciante otorga al Licenciatario una licencia no exclusiva e intransferible para utilizar el software denominado \"NovaAnalytics\" únicamente para fines internos de la empresa.",
+    "plazo": 24,
+    "pago": 14400,
+    "soporte": "El Licenciante brindará soporte técnico vía correo electrónico durante horario laboral.",
+    "terminacion": "Cualquiera de las partes podrá rescindir el contrato mediante notificación escrita con 30 días de anticipación.",
+    "confidencialidad": "Ambas partes acuerdan mantener la confidencialidad de toda la información propietaria intercambiada durante la vigencia del contrato."
+  },
+  "resumen": "Se modificó la duración del contrato de 12 meses a 24 meses y se incrementó la tarifa anual de licencia de USD 12.000 a USD 14.400."
+}
